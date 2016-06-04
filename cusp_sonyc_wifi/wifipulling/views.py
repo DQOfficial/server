@@ -193,7 +193,7 @@ def index(request):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def index_2(request):
-        batch = 10 #default
+    batch = 10 #default
     offset = 0 #default
     b_size = request.GET.get('batch', '')
     off_size = request.GET.get('offset', '')
@@ -231,10 +231,7 @@ def index_2(request):
     q_colname = request.GET.get('columns', '')
     q_decimal = request.GET.get('decimal', '')
 #~~~~~~~~~~~~~~~~~~~~~~~~~dan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    p_max = df.groupby(['lat','lng','ssid']).max()
-    p_median = df.groupby(['lat','lng','ssid']).median()
-    p_mean = df.groupby(['lat','lng','ssid']).mean()
-    
+
     response_data = []
     tem=[]
     if (q_decimal != ''):
@@ -369,20 +366,61 @@ def index_2(request):
     
     response_data = list(tem)
 
-def aggregate():
+def aggregate(agg_type):
     # pull latitude, longitude, and level into their own lists
     lat = [i['lat'] for i in response_data]
     lng = [i['lng'] for i in response_data]
     level = [i['level'] for i in response_data]
     # then use those lists to create a dataframe
-    df = pd.DataFrame({'lat':lat, 
-                        'lng':lng, 
-                        'level':level})
-    # trim decimals for lat/long down to 4 per record
-    df['lat'] = np.round(df.lat,4)
-    df['lng'] = np.round(df.lng,4)
-    # then aggregate by location and compute the median
-    df = df.groupby(['lat','lng']).median()
-    df.reset_index(inplace=True)
-    return df
+    df = pd.DataFrame({'lat':lat,'lng':lng,'level':level})
+
+    # then aggregate by location and compute the mean, median, or max 
+    if agg_type == 'mean':
+        try:
+            df = df.groupby(['lat','lng'], as_index=False).mean()
+            df1 = df
+            df1['lat']=[str(i) for i in df1.lat]
+            df1['lat']=[i[:7] for i in df1.lat]
+            df1['lng']=[str(i) for i in df1.lng]
+            df1['lng']=[i[:8] for i in df1.lng]
+            df1 = df1.groupby(['lat','lng'], as_index=False).mean()
+            
+        except:
+            pass
+        
+        response_data = [{'lat':df1.lat[i],'lng':df1.lng[i],'level':df1.level[i]} for i in df1.index]    
+        return response_data
+
+    elif agg_type == 'median':
+        try:
+            df = df.groupby(['lat','lng'], as_index=False).median()
+            df1 = df
+            df1['lat']=[str(i) for i in df1.lat]
+            df1['lat']=[i[:7] for i in df1.lat]
+            df1['lng']=[str(i) for i in df1.lng]
+            df1['lng']=[str(i) for i in df1.lng]
+            df1 = df1.groupby(['lat','lng'], as_index=False).median()
+        except:
+            pass
+        
+            response_data = [{'lat':df1.lat[i],'lng':df1.lng[i],'level':df1.level[i]} for i in df1.index] 
+        return response_data
+    
+    elif agg_type == 'max':
+        try:
+            df = df.groupby(['lat','lng'], as_index=False).max()
+            df1 = df
+            df1['lat']=[str(i) for i in df1.lat]
+            df1['lat']=[i[:7] for i in df1.lat]
+            df1['lng']=[str(i) for i in df1.lng]
+            df1['lng']=[i[:8] for i in df1.lng]
+            df1 = df1.groupby(['lat','lng'], as_index=False).max()
+        except:
+            pass
+        
+            response_data = [{'lat':df1.lat[i],'lng':df1.lng[i],'level':df1.level[i]} for i in df1.index] 
+        return response_data
+    
+    else:
+        print 'Please enter a valid aggregation type.'
 
