@@ -375,49 +375,43 @@ def aggregate(agg_type):
     df = pd.DataFrame({'lat':lat,'lng':lng,'level':level})
 
     # then aggregate by location and compute the mean, median, or max 
-        if agg_type == 'mean':
+    if agg_type == 'mean':
         try:
-            df = df.groupby(['lat','lng'], as_index=False).mean()
-            df1 = df
-            df1['lat']=[str(i) for i in df1.lat] # convert float to string
-            df1['lat']=[i[:i.find('.')+5] for i in df1.lat] # find the '.', then count four decimal places out
-            df1['lng']=[str(i) for i in df1.lng]
-            df1['lng']=[i[:i.find('.')+5] for i in df1.lng]
-            df1 = df1.groupby(['lat','lng'], as_index=False).mean() 
+            df['lat']=[str(i) for i in df.lat] # convert float to string
+            df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
+            df['lng']=[str(i) for i in df.lng]
+            df['lng']=[i[:i.find('.')+5] for i in df.lng]
+            df = df.groupby(['lat','lng'], as_index=False).mean() 
         except:
             pass
         
-        response_data = [{'lat':df1.lat[i],'lng':df1.lng[i],'level':df1.level[i]} for i in df1.index]    
+        response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
         return response_data
 
     elif agg_type == 'median':
         try:
-            df = df.groupby(['lat','lng'], as_index=False).median()
-            df1 = df
-            df1['lat']=[str(i) for i in df1.lat]
-            df1['lat']=[i[:i.find('.')+5] for i in df1.lat]
-            df1['lng']=[str(i) for i in df1.lng]
-            df1['lng']=[i[:i.find('.')+5] for i in df1.lng]
-            df1 = df1.groupby(['lat','lng'], as_index=False).median()
+            df['lat']=[str(i) for i in df.lat] # convert float to string
+            df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
+            df['lng']=[str(i) for i in df.lng]
+            df['lng']=[i[:i.find('.')+5] for i in df.lng]
+            df = df.groupby(['lat','lng'], as_index=False).mean() 
         except:
             pass
         
-        response_data = [{'lat':df1.lat[i],'lng':df1.lng[i],'level':df1.level[i]} for i in df1.index] 
+        response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
         return response_data
     
     elif agg_type == 'max':
         try:
-            df = df.groupby(['lat','lng'], as_index=False).max()
-            df1 = df
-            df1['lat']=[str(i) for i in df1.lat]
-            df1['lat']=[i[:i.find('.')+5] for i in df1.lat]
-            df1['lng']=[str(i) for i in df1.lng]
-            df1['lng']=[i[:i.find('.')+5] for i in df1.lng]
-            df1 = df1.groupby(['lat','lng'], as_index=False).max()
+            df['lat']=[str(i) for i in df.lat] # convert float to string
+            df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
+            df['lng']=[str(i) for i in df.lng]
+            df['lng']=[i[:i.find('.')+5] for i in df.lng]
+            df = df.groupby(['lat','lng'], as_index=False).max() 
         except:
             pass
-        # create a list of dictionaries - one dict for each entry
-        response_data = [{'lat':df1.lat[i],'lng':df1.lng[i],'level':df1.level[i]} for i in df1.index] 
+        
+        response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
         return response_data
     
     else:
