@@ -374,45 +374,32 @@ def aggregate(agg_type):
     # then use those lists to create a dataframe
     df = pd.DataFrame({'lat':lat,'lng':lng,'level':level})
 
+    # convert lat/longs to strings instead of floats
+    df['lat']=[str(i) for i in df.lat] # convert float to string
+    df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
+    df['lng']=[str(i) for i in df.lng]
+    df['lng']=[i[:i.find('.')+5] for i in df.lng]
     # then aggregate by location and compute the mean, median, or max 
     if agg_type == 'mean':
         try:
-            df['lat']=[str(i) for i in df.lat] # convert float to string
-            df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
-            df['lng']=[str(i) for i in df.lng]
-            df['lng']=[i[:i.find('.')+5] for i in df.lng]
             df = df.groupby(['lat','lng'], as_index=False).mean() 
         except:
             pass
-        
-        response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
-        return response_data
 
     elif agg_type == 'median':
         try:
-            df['lat']=[str(i) for i in df.lat] # convert float to string
-            df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
-            df['lng']=[str(i) for i in df.lng]
-            df['lng']=[i[:i.find('.')+5] for i in df.lng]
             df = df.groupby(['lat','lng'], as_index=False).mean() 
         except:
             pass
         
-        response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
-        return response_data
-    
     elif agg_type == 'max':
         try:
-            df['lat']=[str(i) for i in df.lat] # convert float to string
-            df['lat']=[i[:i.find('.')+5] for i in df.lat] # find the '.', then count four decimal places out
-            df['lng']=[str(i) for i in df.lng]
-            df['lng']=[i[:i.find('.')+5] for i in df.lng]
-            df = df.groupby(['lat','lng'], as_index=False).max() 
+            df = df.groupby(['lat','lng'], as_index=False).max()
         except:
             pass
-        
-        response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
-        return response_data
     
     else:
         print 'Please enter a valid aggregation type.'
+        
+    response_data = [{'lat':df.lat[i],'lng':df.lng[i],'level':df.level[i]} for i in df.index]    
+    return response_data
